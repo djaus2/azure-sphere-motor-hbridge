@@ -7,4 +7,5 @@ See circuit diagram in Circuits folder, left part.
 - Enable  GPIO0 (E1) AzSphere Pin 4
 - Reverse GPIO3 (I1) AzSphere Pin 8
 - Forward GPIO2 (I2) AzSphere Pin 10
-See settings in app_manifest.json. The GPIO pins are somewhat arbitrary so you can chnage there. This needs to match teh settings in hbridge.h
+See settings in app_manifest.json  
+The GPIO pins are some what arbitrary so you can chnage there. This needs to match teh settings in hbridge.h
