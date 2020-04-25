@@ -7,6 +7,7 @@ Pins (L293D pins in brackets):
 - Enable  GPIO0 (E1) AzSphere Pin 4
 - Reverse GPIO3 (I1) AzSphere Pin 8
 - Forward GPIO2 (I2) AzSphere Pin 10
+  
 See settings in **app_manifest.json**  
 The GPIO pins are some what arbitrary so you can change them there.  
 That needs to match the settings in **hbridge.h**
