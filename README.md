@@ -1,2 +1,2 @@
-# Azure Sphere H- Bridge
+# Azure Sphere H-Bridge
 This implements an H-Bridge motor interafce for the Azure Sphere using GPIO and a L293D Push Pull 4 Channel Driver. It is a port of a previous Azure IoT SDK Quickstart Telemetry project available as part of the [az-iothub-ps](djaus2\az-iothub-ps) repository. This port cuurently doesn't include the IOT Hub Telemetry (later) aspect but does continuously control the motor from a loop in the app's main function.
