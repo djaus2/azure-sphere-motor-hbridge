@@ -1,0 +1,12 @@
+﻿{
+  "SchemaVersion": 1,
+  "Name": "AzureSphere-Motor-HBridge",
+  "ComponentId": "8ce36007-8934-4ebc-82f4-187ee283f687",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Gpio": [ 0,1,2,3,9,15 ],
+    "AllowedApplicationConnections": []
+  },
+  "ApplicationType": "Default"
+}
