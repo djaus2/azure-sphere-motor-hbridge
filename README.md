@@ -11,3 +11,30 @@ Pins (L293D pins in brackets):
 See settings in **app_manifest.json**  
 The GPIO pins are some what arbitrary so you can change them there.  
 That needs to match the settings in **hbridge.h**
+
+```
+    Pin: {0} State: (0)
+        Device: Motor Disabled
+    Pin: {0} State: (1)
+        Device: Motor Enabled
+    Pin: {2} State: (1)
+        Device: Motor going fwd
+    Pin: {2} State: (0)
+    Pin: {3} State: (1)
+        Device: Motor going rev
+    Pin: {3} State: (0)
+        Device: Motor is braked
+    Pin: {0} State: (0)
+        Device: Motor Disabled
+    Pin: {0} State: (1)
+        Device: Motor Enabled
+    Pin: {2} State: (1)
+        Device: Motor going fwd
+    Pin: {2} State: (0)
+    Pin: {3} State: (1)
+        Device: Motor going rev
+    Pin: {3} State: (0)
+        Device: Motor is braked
+    Pin: {0} State: (0)
+        Device: Motor Disabled
+```

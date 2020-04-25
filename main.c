@@ -7,16 +7,7 @@
 #include <applibs/log.h>
 #include <applibs/gpio.h>
 
-
-/*#include <stdbool.h>
-#include <errno.h>
-#include <string.h>
-#include <time.h>
-
-#include <applibs/log.h>
-#include <applibs/gpio.h>*/
 #include "hbridge.h"
-
 
 _MotorState MotorState;
 
@@ -38,6 +29,12 @@ static int controllerOpenPin(int pin, int mode)
         fd = GPIO_OpenAsInput(pin);
     else
         fd = GPIO_OpenAsOutput(pin, GPIO_OutputMode_PushPull, GPIOPinLow);
+    if (fd < 0) {
+        Log_Debug(
+            "Error opening GPIO: %s (%d). Check that app_manifest.json includes the GPIO used.\n",
+            strerror(errno), errno);
+        return -1;
+    }
     return fd;
 }
 
@@ -282,67 +279,42 @@ void  RunMotor(char cmd)
 
 int main(void)
 {
-    // This minimal Azure Sphere app repeatedly toggles GPIO 9, which is the green channel of RGB
-    // LED 1 on the MT3620 RDB.
-    // If your device exposes different GPIOs, you might need to change this value. For example,
-    // to run the app on a Seeed mini-dev kit, change the GPIO from 9 to 7 in the call to
-    // GPIO_OpenAsOutput and in the app_manifest.json to blink its LED. Check with your hardware
-    // manufacturer to determine which GPIOs are available.
-    // Use this app to test that device and SDK installation succeeded that you can build,
-    // deploy, and debug an app with Visual Studio, and that you can deploy an app over the air,
-    // per the instructions here: https://docs.microsoft.com/azure-sphere/quickstarts/qs-overview
-    //
-    // It is NOT recommended to use this as a starting point for developing apps; instead use
-    // the extensible samples here: https://github.com/Azure/azure-sphere-samples
+    // This implements an H-Bridge motor interafce for the Azure Sphere MT3620 using GPIO and a L293D Push Pull 4 Channel Driver. 
+    // It is a port of the previous https://github.com/djaus2/djaus2/DNETCoreGPIO GitHub repository, 
+    // the 6th option, "H-Bridge Motor using L293D".
+    // Setup MT3620 as per the instructions here: https://docs.microsoft.com/en-au/azure-sphere/install/overview
+    // This repository: https://github.com/djaus2/azure-sphere-motor-hbridge
     Log_Debug(
-        "\nVisit https://github.com/Azure/azure-sphere-samples for extensible samples to use as a "
+        "\nVisit https://github.com/Azure/azure-sphere-samples for more extensible samples to use as a "
         "starting point for full applications.\n");
 
-    // Change this GPIO number and the number in app_manifest.json if required by your hardware.
-    int fd = GPIO_OpenAsOutput(9, GPIO_OutputMode_PushPull, GPIO_Value_High);
-    if (fd < 0) {
-        Log_Debug(
-            "Error opening GPIO: %s (%d). Check that app_manifest.json includes the GPIO used.\n",
-            strerror(errno), errno);
-        return -1;
-    }
+    // Enable onbaord LEDs
+    int fd = PinEnable = controllerOpenPin(9, modeOut);
+    int fd2= PinEnable = controllerOpenPin(12, modeOut);
 
-    int fd2 = GPIO_OpenAsOutput(15, GPIO_OutputMode_PushPull, GPIO_Value_High);
-    if (fd2 < 0) {
-        Log_Debug(
-            "Error opening GPIO: %s (%d). Check that app_manifest.json includes the GPIO used.\n",
-            strerror(errno), errno);
-        return -1;
-    }
-
+    // Setup H-Bridge
     InitHBridge();
+
     const struct timespec sleepTime = { 1, 0 };
 
-    for (int i = 0; i < 1; i++) {
+    // Demonstrate the functionality of the individual pins
+    // On H-Bridge have a LED for each pin as well
+    for (int i = 0; i < 2; i++) {
         RunMotor('1');
         nanosleep(&sleepTime, NULL);
-
         RunMotor('3');
         nanosleep(&sleepTime, NULL);
-
         RunMotor('5');
         nanosleep(&sleepTime, NULL);
-
-
         RunMotor('0');
         nanosleep(&sleepTime, NULL);
-
         RunMotor('2');
         nanosleep(&sleepTime, NULL);
-
         RunMotor('4');
         nanosleep(&sleepTime, NULL);
     }
 
-   
-
-
-
+    // Demonstrate that motor doesn't run when disabled
     const struct timespec sleepTime2 = { 3, 0 };
     GPIO_SetValue(fd, GPIO_Value_Low);
     GPIO_SetValue(fd2, GPIO_Value_Low);
@@ -355,30 +327,26 @@ int main(void)
     RunMotor('B');
     nanosleep(&sleepTime2, NULL);
 
-
-
- 
-
+    // Demonstrate modes of motor running
     GPIO_SetValue(fd, GPIO_Value_Low);
     GPIO_SetValue(fd2, GPIO_Value_Low);
-        while (true) {
-
-            RunMotor('E');
-            nanosleep(&sleepTime, NULL);
-            RunMotor('F');
-            GPIO_SetValue(fd, GPIO_Value_High);
-            GPIO_SetValue(fd2, GPIO_Value_Low);
-            nanosleep(&sleepTime2, NULL);
-            RunMotor('R');
-            GPIO_SetValue(fd, GPIO_Value_Low);
-            GPIO_SetValue(fd2, GPIO_Value_High);
-            nanosleep(&sleepTime2, NULL);
-            RunMotor('B');
-            GPIO_SetValue(fd, GPIO_Value_Low);
-            GPIO_SetValue(fd2, GPIO_Value_Low);
-            nanosleep(&sleepTime2, NULL);
-            RunMotor('D');
-            nanosleep(&sleepTime2, NULL);
-        }
+    while (true) {
+        RunMotor('E');
+        nanosleep(&sleepTime, NULL);
+        RunMotor('F');
+        GPIO_SetValue(fd, GPIO_Value_High);
+        GPIO_SetValue(fd2, GPIO_Value_Low);
+        nanosleep(&sleepTime2, NULL);
+        RunMotor('R');
+        GPIO_SetValue(fd, GPIO_Value_Low);
+        GPIO_SetValue(fd2, GPIO_Value_High);
+        nanosleep(&sleepTime2, NULL);
+        RunMotor('B');
+        GPIO_SetValue(fd, GPIO_Value_Low);
+        GPIO_SetValue(fd2, GPIO_Value_Low);
+        nanosleep(&sleepTime2, NULL);
+        RunMotor('D');
+        nanosleep(&sleepTime2, NULL);
+    }
     
 }
